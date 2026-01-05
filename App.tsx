@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Layout from './components/Layout';
 import Die from './components/Die';
@@ -109,7 +108,7 @@ const App: React.FC = () => {
       comboSoundEnabled: true,
       musicEnabled: true,
       darkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
-      musicVolume: 0.5,
+      musicVolume: 0.25, // Volume inicial ajustado para 25% (0.25)
       soundVolume: 1.0
     };
   });

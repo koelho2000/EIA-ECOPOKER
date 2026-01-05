@@ -1,9 +1,9 @@
-
 /**
  * CONFIGURAÇÃO DE ÁUDIO PROFISSIONAL - EIA-ECOPOKER
  */
 export const SOUND_SOURCES = {
-  BACKGROUND_MUSIC: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/e994924df0fe5d121a328a118496c448f321e8ed/MUSICA/EIA-ECOPOKER.mp3',
+  // Atualizado com o novo link fornecido pelo utilizador
+  BACKGROUND_MUSIC: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/d1ea714600870d663d1dba4a944459083bd3fd29/MUSICA/MUSICA_APP_EIA-ECOPOKER.mp3',
 
   ROLL: '',
   HOLD: '',
@@ -31,7 +31,7 @@ class AudioService {
   private context: AudioContext | null = null;
   private bgMusic: HTMLAudioElement | null = null;
   private masterGain: GainNode | null = null;
-  private currentMusicVolume: number = 0.5;
+  private currentMusicVolume: number = 0.25; // Volume de música padrão ajustado para 25%
   private currentSoundVolume: number = 1.0;
 
   setEnabled(enabled: boolean) {
