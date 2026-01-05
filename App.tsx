@@ -17,7 +17,7 @@ import {
   Sun as SunIcon, Volume2, Award, Trophy, 
   Info, Zap, Leaf, Factory, Star, Medal,
   Music, CheckCircle2, LayoutDashboard, Settings as SettingsIcon,
-  Flame, Droplets, Wind, Users
+  Flame, Droplets, Wind, Users, Globe, ExternalLink
 } from 'lucide-react';
 
 const ScoreModal: React.FC<{ isOpen: boolean; onClose: () => void; currentHand: any }> = ({ isOpen, onClose, currentHand }) => {
@@ -296,21 +296,77 @@ const App: React.FC = () => {
   const resetGame = () => { if (confirm("Deseja reiniciar a missão energética?")) { lastProcessedRollId.current = ""; setComboPopup(null); setGameState({ players: [], activePlayerIndex: 0, rollCount: 0, maxRolls: MAX_ROLLS, currentRound: 1, totalRounds: 5, diceValues: Array(DICE_COUNT).fill(null), heldDice: Array(DICE_COUNT).fill(false), isGameOver: false, roundScoreExplanation: [], currentRoundScore: 0 }); setSetupMode(true); } };
 
   if (showSplash) {
+    const currentDate = new Date().toLocaleDateString('pt-PT', { 
+      day: '2-digit', 
+      month: 'long', 
+      year: 'numeric' 
+    });
+
     return (
-      <div className="fixed inset-0 bg-emerald-950 flex flex-col items-center justify-center p-8 z-[120] text-white text-center">
-        <div className="animate-float mb-12">
-          <div className="w-24 h-24 bg-emerald-500 rounded-[30px] mx-auto mb-6 flex items-center justify-center shadow-2xl shadow-emerald-500/50 ring-4 ring-white/10">
-            <Trophy size={48} />
-          </div>
-          <h1 className="text-4xl font-black tracking-tighter mb-2 italic uppercase">EIA-ECOPOKER</h1>
-          <p className="text-emerald-400 font-bold uppercase text-[10px] tracking-[0.2em] opacity-80">Sustainable Energy Challenge</p>
+      <div className="fixed inset-0 bg-[#022c22] flex flex-col items-center justify-between p-8 z-[120] text-white text-center overflow-hidden">
+        {/* Background Decorative Elements */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
+          <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-emerald-500 rounded-full blur-[100px]"></div>
+          <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-600 rounded-full blur-[100px]"></div>
         </div>
-        <button 
-          onClick={() => { setShowSplash(false); audioService.resumeContext(); audioService.playClick(); }} 
-          className="bg-white text-emerald-900 font-black px-16 py-5 rounded-full shadow-2xl active:scale-90 transition-all uppercase tracking-widest text-sm"
-        >
-          INICIAR MISSÃO
-        </button>
+
+        {/* Content Top: Version & Date */}
+        <div className="pt-safe w-full flex justify-between items-start opacity-40">
+          <div className="text-left">
+            <p className="text-[8px] font-black uppercase tracking-[0.3em]">Build v1.5.0 Pro</p>
+            <p className="text-[8px] font-bold uppercase tracking-widest mt-0.5">Stable Release</p>
+          </div>
+          <div className="text-right">
+            <p className="text-[8px] font-black uppercase tracking-[0.1em]">{currentDate}</p>
+          </div>
+        </div>
+
+        {/* Central Logo Area */}
+        <div className="flex flex-col items-center">
+          <div className="animate-float mb-8">
+            <div className="w-28 h-28 bg-emerald-500 rounded-[40px] mx-auto mb-8 flex items-center justify-center shadow-[0_20px_60px_-15px_rgba(16,185,129,0.5)] ring-8 ring-white/5 relative group">
+              <Zap size={56} className="text-white fill-white animate-pulse" />
+              <div className="absolute inset-0 bg-white/20 rounded-[40px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </div>
+            <h1 className="text-5xl font-black tracking-tighter mb-3 italic uppercase bg-gradient-to-b from-white to-emerald-300 bg-clip-text text-transparent">EIA-ECOPOKER</h1>
+            <p className="text-emerald-400 font-bold uppercase text-[10px] tracking-[0.4em] opacity-80 leading-none">Sustainable Power Strategy</p>
+          </div>
+
+          <button 
+            onClick={() => { setShowSplash(false); audioService.resumeContext(); audioService.playClick(); }} 
+            className="group relative bg-white text-emerald-950 font-black px-14 py-5 rounded-[25px] shadow-2xl active:scale-95 transition-all uppercase tracking-[0.2em] text-sm overflow-hidden"
+          >
+            <span className="relative z-10 flex items-center gap-3">INICIAR MISSÃO <ChevronRight size={18} /></span>
+            <div className="absolute inset-0 bg-emerald-100 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+          </button>
+        </div>
+
+        {/* Bottom Footer Area: Credits & Links */}
+        <div className="pb-safe w-full space-y-4">
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-30">Desenvolvido por</p>
+            <p className="text-sm font-black italic tracking-tight uppercase text-emerald-400">By Koelho2000</p>
+          </div>
+          
+          <div className="flex justify-center items-center gap-8 pt-4 border-t border-white/5">
+            <a 
+              href="https://www.koelho2000.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-[9px] font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest"
+            >
+              <Globe size={10} /> koelho2000.com
+            </a>
+            <a 
+              href="https://www.eia.pt" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-[9px] font-bold text-zinc-400 hover:text-white transition-colors uppercase tracking-widest"
+            >
+              <ExternalLink size={10} /> eia.pt
+            </a>
+          </div>
+        </div>
       </div>
     );
   }
