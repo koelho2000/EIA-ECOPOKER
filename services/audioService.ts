@@ -2,23 +2,29 @@
 /**
  * CONFIGURAÇÃO DE ÁUDIO PROFISSIONAL - EIA-ECOPOKER
  * Substitua as URLs abaixo pelos links dos seus ficheiros (.mp3 ou .wav).
- * O sistema tentará tocar o ficheiro externo; se falhar ou estiver vazio, 
- * usará a síntese de som interna (fallback).
+ * O sistema usará a síntese de som interna como fallback se o link estiver vazio.
  */
 export const SOUND_SOURCES = {
-  // Link para a música de fundo (Exemplo: Lofi ambiental)
   BACKGROUND_MUSIC: 'https://cdn.pixabay.com/download/audio/2022/02/22/audio_d171694f41.mp3?filename=lofi-study-112191.mp3',
   
-  // Efeitos de Interface
+  // Efeitos Básicos
   ROLL: '',
   HOLD: '',
   SUCCESS: '',
   CLICK: '',
   
-  // Sons de Combos (Pode colocar um som épico para o Clean Power!)
-  COMBO_GENERIC: '',
+  // Sons de Combos (Hierarquia Completa)
   COMBO_CLEAN_POWER: '',
   COMBO_CLEAN_FLUSH: '',
+  COMBO_FIVE_CLEAN: '',
+  COMBO_FULL_HOUSE_VERDE: '',
+  COMBO_STRAIGHT_ENERGETICO: '',
+  COMBO_FOUR_CLEAN: '',
+  COMBO_THREE_CLEAN: '',
+  COMBO_TWO_PAIR_VERDE: '',
+  COMBO_ONE_PAIR_CLEAN: '',
+  COMBO_MIXED_ENERGY: '',
+  COMBO_DIRTY_ENERGY: '',
   COMBO_BLACKOUT: '',
 };
 
@@ -46,9 +52,9 @@ class AudioService {
       if (!this.bgMusic) {
         this.bgMusic = new Audio(SOUND_SOURCES.BACKGROUND_MUSIC);
         this.bgMusic.loop = true;
-        this.bgMusic.volume = 0.25;
+        this.bgMusic.volume = 0.2;
       }
-      this.bgMusic.play().catch(() => console.log("Música aguarda interação do utilizador"));
+      this.bgMusic.play().catch(() => console.log("Música aguarda interação"));
     } else if (this.bgMusic) {
       this.bgMusic.pause();
     }
@@ -113,17 +119,27 @@ class AudioService {
 
   playComboSound(comboName: string) {
     if (!this.enabled) return;
-    let url = SOUND_SOURCES.COMBO_GENERIC;
-    if (comboName === "CLEAN POWER!") url = SOUND_SOURCES.COMBO_CLEAN_POWER;
-    if (comboName === "BLACKOUT!") url = SOUND_SOURCES.COMBO_BLACKOUT;
+    let url = '';
+    switch(comboName) {
+      case "CLEAN POWER!": url = SOUND_SOURCES.COMBO_CLEAN_POWER; break;
+      case "CLEAN FLUSH TOTAL!": url = SOUND_SOURCES.COMBO_CLEAN_FLUSH; break;
+      case "FIVE CLEAN!": url = SOUND_SOURCES.COMBO_FIVE_CLEAN; break;
+      case "FULL HOUSE VERDE!": url = SOUND_SOURCES.COMBO_FULL_HOUSE_VERDE; break;
+      case "STRAIGHT ENERGÉTICO!": url = SOUND_SOURCES.COMBO_STRAIGHT_ENERGETICO; break;
+      case "FOUR CLEAN!": url = SOUND_SOURCES.COMBO_FOUR_CLEAN; break;
+      case "THREE CLEAN!": url = SOUND_SOURCES.COMBO_THREE_CLEAN; break;
+      case "TWO PAIR VERDE!": url = SOUND_SOURCES.COMBO_TWO_PAIR_VERDE; break;
+      case "ONE PAIR CLEAN!": url = SOUND_SOURCES.COMBO_ONE_PAIR_CLEAN; break;
+      case "MIXED ENERGY": url = SOUND_SOURCES.COMBO_MIXED_ENERGY; break;
+      case "DIRTY ENERGY!": url = SOUND_SOURCES.COMBO_DIRTY_ENERGY; break;
+      case "BLACKOUT!": url = SOUND_SOURCES.COMBO_BLACKOUT; break;
+    }
 
     this.playExternal(url, () => {
-      if (comboName === "BLACKOUT!") {
+      if (comboName === "BLACKOUT!" || comboName === "DIRTY ENERGY!") {
         this.createTone(60, 'sawtooth', 0.8, 0.15);
       } else {
-        [329.63, 392.00, 523.25, 659.25].forEach((f, i) => 
-          this.createTone(f, 'triangle', 0.6, 0.08, i * 0.08)
-        );
+        [329, 392, 523, 659].forEach((f, i) => this.createTone(f, 'triangle', 0.6, 0.08, i * 0.1));
       }
     });
   }
