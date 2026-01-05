@@ -1,11 +1,12 @@
 
 /**
  * CONFIGURAÇÃO DE ÁUDIO PROFISSIONAL - EIA-ECOPOKER
- * Substitua as URLs abaixo pelos links dos seus ficheiros (.mp3 ou .wav).
- * O sistema usará a síntese de som interna como fallback se o link estiver vazio.
+ * O link da música foi corrigido para o formato RAW do GitHub para que o browser consiga ler.
+ * Se desejar trocar, use sempre links diretos que terminem em .mp3 ou .wav.
  */
 export const SOUND_SOURCES = {
-  BACKGROUND_MUSIC: 'https://cdn.pixabay.com/download/audio/2022/02/22/audio_d171694f41.mp3?filename=lofi-study-112191.mp3',
+  // LINK RAW CORRIGIDO
+  BACKGROUND_MUSIC: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/e994924df0fe5d121a328a118496c448f321e8ed/MUSICA/EIA-ECOPOKER.mp3',
   
   // Efeitos Básicos
   ROLL: '',
@@ -47,14 +48,22 @@ class AudioService {
     this.updateMusic();
   }
 
+  // Função para "acordar" o áudio após o primeiro clique do utilizador
+  async resumeContext() {
+    if (this.context && this.context.state === 'suspended') {
+      await this.context.resume();
+    }
+    this.updateMusic();
+  }
+
   private updateMusic() {
     if (this.musicEnabled && this.enabled && SOUND_SOURCES.BACKGROUND_MUSIC) {
       if (!this.bgMusic) {
         this.bgMusic = new Audio(SOUND_SOURCES.BACKGROUND_MUSIC);
         this.bgMusic.loop = true;
-        this.bgMusic.volume = 0.2;
+        this.bgMusic.volume = 0.25;
       }
-      this.bgMusic.play().catch(() => console.log("Música aguarda interação"));
+      this.bgMusic.play().catch(() => console.log("Aguardando interação para tocar música"));
     } else if (this.bgMusic) {
       this.bgMusic.pause();
     }
