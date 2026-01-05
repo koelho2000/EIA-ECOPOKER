@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>EIA-ECOPOKER</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#064e3b">
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              felt: {
+                light: '#059669',
+                dark: '#064e3b',
+                deep: '#022c22'
+              },
+              poker: {
+                gold: '#fbbf24',
+                ivory: '#fef3c7'
+              }
+            },
+            animation: {
+              'shake': 'shake 0.15s infinite',
+              'bounce-subtle': 'bounceSubtle 2s infinite',
+              'pop-in': 'popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+              'fade-out-up': 'fadeOutUp 2s ease-in-out forwards',
+              'float': 'float 3s ease-in-out infinite'
+            },
+            keyframes: {
+              shake: {
+                '0%, 100%': { transform: 'translate(0, 0) rotate(0deg)' },
+                '25%': { transform: 'translate(2px, 2px) rotate(1deg)' },
+                '50%': { transform: 'translate(-2px, 2px) rotate(-1deg)' },
+                '75%': { transform: 'translate(2px, -2px) rotate(1deg)' }
+              },
+              bounceSubtle: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-5px)' },
+              },
+              popIn: {
+                '0%': { transform: 'scale(0.5) translateY(20px)', opacity: '0' },
+                '100%': { transform: 'scale(1) translateY(0)', opacity: '1' }
+              },
+              fadeOutUp: {
+                '0%': { transform: 'translateY(0)', opacity: '1' },
+                '70%': { transform: 'translateY(-20px)', opacity: '1' },
+                '100%': { transform: 'translateY(-40px)', opacity: '0' }
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' }
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+      
+      body {
+        font-family: 'Inter', sans-serif;
+        -webkit-tap-highlight-color: transparent;
+        overscroll-behavior-y: contain;
+        user-select: none;
+      }
+
+      .perspective-1000 { perspective: 1000px; }
+      .preserve-3d { transform-style: preserve-3d; }
+      .backface-hidden { backface-visibility: hidden; }
+
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+      .pt-safe { padding-top: env(safe-area-inset-top); }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react-dom": "https://esm.sh/react-dom@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+  }
+}
+</script>
+</head>
+<body class="bg-gray-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
+    <div id="root"></div>
+</body>
+</html>
