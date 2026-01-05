@@ -26,6 +26,8 @@ export interface Settings {
   comboSoundEnabled: boolean;
   musicEnabled: boolean;
   darkMode: boolean;
+  musicVolume: number;
+  soundVolume: number;
 }
 
 export interface HallOfFameEntry {

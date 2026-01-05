@@ -1,21 +1,17 @@
 
 /**
  * CONFIGURAÇÃO DE ÁUDIO PROFISSIONAL - EIA-ECOPOKER
- * O link da música foi corrigido para o formato RAW do GitHub para que o browser consiga ler.
- * Se desejar trocar, use sempre links diretos que terminem em .mp3 ou .wav.
  */
 export const SOUND_SOURCES = {
-  // LINK RAW CORRIGIDO
   BACKGROUND_MUSIC: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/e994924df0fe5d121a328a118496c448f321e8ed/MUSICA/EIA-ECOPOKER.mp3',
-  
-  // Efeitos Básicos
+
   ROLL: '',
   HOLD: '',
   SUCCESS: '',
   CLICK: '',
   
-  // Sons de Combos (Hierarquia Completa)
-  COMBO_CLEAN_POWER: '',
+  // Link convertido para RAW para funcionamento correto no navegador
+  COMBO_CLEAN_POWER: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/54a66cde28cc052bb3695f13a232758a0c334df2/SONS/clean_power_combo.wav',
   COMBO_CLEAN_FLUSH: '',
   COMBO_FIVE_CLEAN: '',
   COMBO_FULL_HOUSE_VERDE: '',
@@ -34,11 +30,17 @@ class AudioService {
   private musicEnabled: boolean = false;
   private context: AudioContext | null = null;
   private bgMusic: HTMLAudioElement | null = null;
+  private masterGain: GainNode | null = null;
+  private currentMusicVolume: number = 0.5;
+  private currentSoundVolume: number = 1.0;
 
   setEnabled(enabled: boolean) {
     this.enabled = enabled;
     if (enabled && !this.context) {
       this.context = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.masterGain = this.context.createGain();
+      this.masterGain.gain.setValueAtTime(this.currentSoundVolume, this.context.currentTime);
+      this.masterGain.connect(this.context.destination);
     }
     this.updateMusic();
   }
@@ -48,7 +50,21 @@ class AudioService {
     this.updateMusic();
   }
 
-  // Função para "acordar" o áudio após o primeiro clique do utilizador
+  setMusicVolume(vol: number) {
+    this.currentMusicVolume = vol;
+    if (this.bgMusic) {
+      this.bgMusic.volume = vol;
+    }
+  }
+
+  setSoundVolume(vol: number) {
+    this.currentSoundVolume = vol;
+    if (this.context && this.masterGain) {
+      // Ajuste suave do volume mestre de efeitos
+      this.masterGain.gain.setTargetAtTime(vol, this.context.currentTime, 0.05);
+    }
+  }
+
   async resumeContext() {
     if (this.context && this.context.state === 'suspended') {
       await this.context.resume();
@@ -61,35 +77,30 @@ class AudioService {
       if (!this.bgMusic) {
         this.bgMusic = new Audio(SOUND_SOURCES.BACKGROUND_MUSIC);
         this.bgMusic.loop = true;
-        this.bgMusic.volume = 0.25;
+        this.bgMusic.volume = this.currentMusicVolume; 
       }
-      this.bgMusic.play().catch(() => console.log("Aguardando interação para tocar música"));
+      this.bgMusic.play().catch(() => console.log("Música aguarda interação"));
     } else if (this.bgMusic) {
       this.bgMusic.pause();
     }
   }
 
   private async createTone(freq: number, type: OscillatorType, duration: number, volume: number, delay: number = 0) {
-    if (!this.enabled || !this.context) return;
+    if (!this.enabled || !this.context || !this.masterGain) return;
     if (this.context.state === 'suspended') await this.context.resume();
 
     const osc = this.context.createOscillator();
     const gain = this.context.createGain();
-    const filter = this.context.createBiquadFilter();
 
     osc.type = type;
     osc.frequency.setValueAtTime(freq, this.context.currentTime + delay);
     
     gain.gain.setValueAtTime(0, this.context.currentTime + delay);
-    gain.gain.linearRampToValueAtTime(volume, this.context.currentTime + delay + 0.05);
+    gain.gain.linearRampToValueAtTime(volume, this.context.currentTime + delay + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + delay + duration);
 
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(freq * 2, this.context.currentTime + delay);
-
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(this.context.destination);
+    osc.connect(gain);
+    gain.connect(this.masterGain);
 
     osc.start(this.context.currentTime + delay);
     osc.stop(this.context.currentTime + delay + duration);
@@ -99,6 +110,8 @@ class AudioService {
     if (!this.enabled) return;
     if (url && url.length > 5) {
       const audio = new Audio(url);
+      // O volume do áudio individual é multiplicado pelo volume master de sons
+      audio.volume = this.currentSoundVolume;
       audio.play().catch(fallback);
     } else {
       fallback();
@@ -107,23 +120,23 @@ class AudioService {
 
   playRoll() {
     this.playExternal(SOUND_SOURCES.ROLL, () => {
-      for(let i = 0; i < 5; i++) this.createTone(150 + Math.random() * 100, 'square', 0.1, 0.02, i * 0.05);
+      for(let i = 0; i < 4; i++) this.createTone(180 + Math.random() * 120, 'square', 0.12, 0.05, i * 0.06);
     });
   }
 
   playHold() {
-    this.playExternal(SOUND_SOURCES.HOLD, () => this.createTone(660, 'sine', 0.15, 0.05));
+    this.playExternal(SOUND_SOURCES.HOLD, () => this.createTone(700, 'sine', 0.1, 0.08));
   }
 
   playSuccess() {
     this.playExternal(SOUND_SOURCES.SUCCESS, () => {
-      this.createTone(523.25, 'sine', 0.3, 0.1);
-      this.createTone(659.25, 'sine', 0.4, 0.08, 0.1);
+      this.createTone(523, 'sine', 0.4, 0.15);
+      this.createTone(659, 'sine', 0.4, 0.12, 0.1);
     });
   }
 
   playClick() {
-    this.playExternal(SOUND_SOURCES.CLICK, () => this.createTone(1200, 'sine', 0.05, 0.03));
+    this.playExternal(SOUND_SOURCES.CLICK, () => this.createTone(1000, 'sine', 0.04, 0.05));
   }
 
   playComboSound(comboName: string) {
@@ -146,9 +159,9 @@ class AudioService {
 
     this.playExternal(url, () => {
       if (comboName === "BLACKOUT!" || comboName === "DIRTY ENERGY!") {
-        this.createTone(60, 'sawtooth', 0.8, 0.15);
+        this.createTone(55, 'sawtooth', 0.8, 0.2);
       } else {
-        [329, 392, 523, 659].forEach((f, i) => this.createTone(f, 'triangle', 0.6, 0.08, i * 0.1));
+        [329, 392, 523, 659, 783].forEach((f, i) => this.createTone(f, 'triangle', 0.7, 0.1, i * 0.08));
       }
     });
   }
