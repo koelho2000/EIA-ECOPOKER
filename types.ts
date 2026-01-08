@@ -1,10 +1,13 @@
-
 export type EnergyType = 'Solar' | 'Carvão' | 'Hidro' | 'Petróleo' | 'Eólica' | 'Gás';
 
 export interface Player {
   id: string;
   name: string;
   score: number;
+  lastScore?: number;
+  lastCombo?: string;
+  maxHand: number;
+  minHand: number;
 }
 
 export interface GameState {
@@ -35,4 +38,6 @@ export interface HallOfFameEntry {
   score: number;
   date: string;
   rounds: number;
+  maxHand: number;
+  minHand: number;
 }

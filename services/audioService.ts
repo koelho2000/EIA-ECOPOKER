@@ -2,27 +2,29 @@
  * CONFIGURAÇÃO DE ÁUDIO PROFISSIONAL - EIA-ECOPOKER
  */
 export const SOUND_SOURCES = {
-  // Atualizado com o novo link fornecido pelo utilizador
   BACKGROUND_MUSIC: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/d1ea714600870d663d1dba4a944459083bd3fd29/MUSICA/MUSICA_APP_EIA-ECOPOKER.mp3',
 
-  ROLL: '',
+  // Sons de dados
+  ROLL: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/873f49e210de04ce99b9748c6f562cf63d8cb06b/SOM/dice-95077.mp3',
+  SHAKE: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/873f49e210de04ce99b9748c6f562cf63d8cb06b/SOM/diceshake-90280.mp3',
+  
   HOLD: '',
   SUCCESS: '',
   CLICK: '',
   
-  // Link convertido para RAW para funcionamento correto no navegador
-  COMBO_CLEAN_POWER: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/54a66cde28cc052bb3695f13a232758a0c334df2/SONS/clean_power_combo.wav',
-  COMBO_CLEAN_FLUSH: '',
-  COMBO_FIVE_CLEAN: '',
-  COMBO_FULL_HOUSE_VERDE: '',
-  COMBO_STRAIGHT_ENERGETICO: '',
-  COMBO_FOUR_CLEAN: '',
-  COMBO_THREE_CLEAN: '',
-  COMBO_TWO_PAIR_VERDE: '',
-  COMBO_ONE_PAIR_CLEAN: '',
-  COMBO_MIXED_ENERGY: '',
-  COMBO_DIRTY_ENERGY: '',
-  COMBO_BLACKOUT: '',
+  // Sons de Combos (Atualizados com links diretos)
+  COMBO_CLEAN_POWER: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/c63f8a8a831b420a9b1f7e8c22833285f6e11eb4/SOM/material-load-booster-394510.mp3',
+  COMBO_CLEAN_FLUSH: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/06402a2376785c92c416334b3ab47d4030edea9c/SOM/material-buy-success-394517.mp3',
+  COMBO_FIVE_CLEAN: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/06402a2376785c92c416334b3ab47d4030edea9c/SOM/material-butterfly-energy-394513.mp3',
+  COMBO_FULL_HOUSE_VERDE: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/06402a2376785c92c416334b3ab47d4030edea9c/SOM/funny-lighthearted-springy-boing-effect-20-416269.mp3',
+  COMBO_STRAIGHT_ENERGETICO: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/06402a2376785c92c416334b3ab47d4030edea9c/SOM/funny-lighthearted-springy-boing-effect-17-416253.mp3',
+  COMBO_FOUR_CLEAN: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/06402a2376785c92c416334b3ab47d4030edea9c/SOM/funny-lighthearted-springy-boing-effect-01-416262.mp3',
+  COMBO_THREE_CLEAN: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/06402a2376785c92c416334b3ab47d4030edea9c/SOM/clear-combo-1-394489.mp3',
+  COMBO_TWO_PAIR_VERDE: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/d403541761df679e4f2efcaa5fd4fe507c8c1d62/SOM/clear-combo-7-394494.mp3',
+  COMBO_ONE_PAIR_CLEAN: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/c63f8a8a831b420a9b1f7e8c22833285f6e11eb4/SOM/material-load-booster-394510.mp3',
+  COMBO_MIXED_ENERGY: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/06402a2376785c92c416334b3ab47d4030edea9c/SOM/rpg-sword-attack-combo-9-388928.mp3',
+  COMBO_DIRTY_ENERGY: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/59e7e721dc9e59edfae9c8e03f7963bdb4b702a4/SOM/funny-lighthearted-springy-boing-effect-02-416259.mp3',
+  COMBO_BLACKOUT: 'https://raw.githubusercontent.com/koelho2000/EIA-ECOPOKER/59e7e721dc9e59edfae9c8e03f7963bdb4b702a4/SOM/funny-lighthearted-springy-boing-effect-16-416266.mp3',
 };
 
 class AudioService {
@@ -30,9 +32,10 @@ class AudioService {
   private musicEnabled: boolean = false;
   private context: AudioContext | null = null;
   private bgMusic: HTMLAudioElement | null = null;
+  private shakeAudio: HTMLAudioElement | null = null;
   private masterGain: GainNode | null = null;
-  private currentMusicVolume: number = 0.25; // Volume de música padrão ajustado para 25%
-  private currentSoundVolume: number = 1.0;
+  private currentMusicVolume: number = 0.1; 
+  private currentSoundVolume: number = 0.1;
 
   setEnabled(enabled: boolean) {
     this.enabled = enabled;
@@ -60,8 +63,10 @@ class AudioService {
   setSoundVolume(vol: number) {
     this.currentSoundVolume = vol;
     if (this.context && this.masterGain) {
-      // Ajuste suave do volume mestre de efeitos
       this.masterGain.gain.setTargetAtTime(vol, this.context.currentTime, 0.05);
+    }
+    if (this.shakeAudio) {
+      this.shakeAudio.volume = vol;
     }
   }
 
@@ -83,6 +88,29 @@ class AudioService {
     } else if (this.bgMusic) {
       this.bgMusic.pause();
     }
+  }
+
+  playShake() {
+    if (!this.enabled || !SOUND_SOURCES.SHAKE) return;
+    if (!this.shakeAudio) {
+      this.shakeAudio = new Audio(SOUND_SOURCES.SHAKE);
+      this.shakeAudio.loop = true;
+    }
+    this.shakeAudio.volume = this.currentSoundVolume;
+    this.shakeAudio.play().catch(() => {});
+  }
+
+  stopShake() {
+    if (this.shakeAudio) {
+      this.shakeAudio.pause();
+      this.shakeAudio.currentTime = 0;
+    }
+  }
+
+  playRoll() {
+    this.playExternal(SOUND_SOURCES.ROLL, () => {
+      for(let i = 0; i < 4; i++) this.createTone(180 + Math.random() * 120, 'square', 0.12, 0.05, i * 0.06);
+    });
   }
 
   private async createTone(freq: number, type: OscillatorType, duration: number, volume: number, delay: number = 0) {
@@ -110,18 +138,11 @@ class AudioService {
     if (!this.enabled) return;
     if (url && url.length > 5) {
       const audio = new Audio(url);
-      // O volume do áudio individual é multiplicado pelo volume master de sons
       audio.volume = this.currentSoundVolume;
       audio.play().catch(fallback);
     } else {
       fallback();
     }
-  }
-
-  playRoll() {
-    this.playExternal(SOUND_SOURCES.ROLL, () => {
-      for(let i = 0; i < 4; i++) this.createTone(180 + Math.random() * 120, 'square', 0.12, 0.05, i * 0.06);
-    });
   }
 
   playHold() {
